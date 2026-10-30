@@ -91,6 +91,9 @@ section > .wrap > .head p { color: var(--secondary); margin-top: 8px; }
 /* Nest — 실제 사이트를 작은 창으로 */
 .nest { display: grid; gap: 20px; margin-bottom: 64px; }
 .nest > div:first-child { max-width: 720px; }
+.with-logo { display: flex; align-items: center; gap: 10px; }
+.logo { flex: none; }
+.logo.tile { padding: 5px; border-radius: 9px; background: #fff; box-shadow: inset 0 0 0 1px var(--separator); }
 .window { background: var(--surface); border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px var(--separator), 0 20px 50px rgba(0,0,0,.12); }
 .window .bar { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; background: var(--t2); border-bottom: 1px solid var(--separator); }
 .dots { display: flex; gap: 7px; } .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--t3); }
@@ -836,7 +839,7 @@ face QC  sim 0.91 ✓</pre><div class="label"><b>Qwen-Image-Edit-2509</b><span>�
     <div class="nest">
       <div>
         <p class="caption">chiral.kr · 운영 중</p>
-        <h3>Chiral</h3>
+        <h3 class="with-logo"><img class="logo tile" src="images/logo_chiral.png" alt="" width="36" height="36">Chiral</h3>
         <p class="secondary" style="margin:8px 0 12px">같은 이름을 가진 사람끼리 자동으로 같은 방에 배정되는 커뮤니티. 글·투표·협업 픽셀 캔버스.</p>
         <div class="tags"><span class="tag">Spring Boot 4</span><span class="tag">Java 25</span><span class="tag">Next.js 16</span><span class="tag">PostgreSQL</span><span class="tag">DDD</span></div>
         <p style="margin-top:16px"><a href="https://chiral.kr" target="_blank" rel="noopener">사이트 열기 ↗</a></p>
@@ -870,7 +873,7 @@ face QC  sim 0.91 ✓</pre><div class="label"><b>Qwen-Image-Edit-2509</b><span>�
     <article class="anat" id="hoody" data-exploded="false">
       <header>
         <div>
-          <h3>Hoody</h3>
+          <h3 class="with-logo"><img class="logo" src="images/logo_hoody.png" alt="" width="40" height="40">Hoody</h3>
           <p class="hint">하단 탭을 바꾸고 지도 위 핀을 눌러보세요 · 지도를 길게 누르면 그 자리에 글쓰기</p>
         </div>
         <button class="btn explode">분해</button>
@@ -946,7 +949,7 @@ EKEvent saved</pre><div class="label"><b>MapKit · ActivityKit</b><span>클러�
     <article class="anat" id="yugi" data-exploded="false">
       <header>
         <div>
-          <h3>YugiTokenBar</h3>
+          <h3 class="with-logo"><img class="logo" src="images/logo_yugi.png" alt="" width="40" height="40">YugiTokenBar</h3>
           <p class="hint">팩을 사서 카드를 한 장씩 뒤집어보세요 · Shop · Dex · 사용량(오늘 줄)도 눌러볼 수 있습니다</p>
         </div>
         <button class="btn explode">분해</button>
