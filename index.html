@@ -316,7 +316,9 @@ section > .wrap > .head p { color: var(--secondary); margin-top: 8px; }
 #yugi .rst { display: grid; grid-template-columns: auto 1fr auto; gap: 3px 6px; align-items: center; margin-top: 10px; } #yugi .rst .rb { position: static; font-size: 7px; }
 
 /* --- 업무 해부도: 대시보드 화면 (모두 wd- 접두사로 한정) --- */
-.anat.wide { --h: 600px; --w: 600px; --rh: 384px; --lr: 12px; --es: .5; --gap: 120px; }
+.anat.wide { --h: 680px; --w: 600px; --rh: 384px; --lr: 12px; --es: .62; --gap: 120px; }
+.anat.wide .rig { --s: 1.5; }
+@media (max-width: 1000px) { .anat.wide { --h: 520px; } .anat.wide .rig { --s: 1.1; --es: .5; } }
 .wd { position: relative; width: 100%; height: 100%; border-radius: 6px; overflow: hidden; font-size: 11px; background: #f5f5f7; color: #1d1d1f; display: flex; flex-direction: column; user-select: none; -webkit-user-select: none; }
 .wd.dark { background: #121418; color: #e5e5ea; }
 .wd-bar { height: 30px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-bottom: 1px solid rgba(128,128,128,.22); }
