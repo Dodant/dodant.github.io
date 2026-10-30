@@ -48,13 +48,10 @@ h3 { font-size: 22px; font-weight: 600; }
 
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
 
-/* Nav — material bar + segmented control */
+/* Nav — material bar */
 nav { position: sticky; top: 0; z-index: 10; background: var(--material); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid var(--separator); }
 nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 52px; }
 nav strong { font-size: 17px; }
-.segmented { display: inline-flex; background: var(--fill); border-radius: 9px; padding: 2px; }
-.segmented a { color: var(--label); font-size: 13px; font-weight: 500; padding: 4px 14px; border-radius: 7px; }
-.segmented a.on { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 
 header.hero { padding: 96px 0 72px; }
 .hero p.lead { font-size: 22px; color: var(--secondary); margin-top: 16px; max-width: 720px; }
@@ -63,6 +60,14 @@ header.hero { padding: 96px 0 72px; }
 .stat b { display: block; font-size: 28px; font-weight: 700; letter-spacing: -.01em; }
 
 section { padding: 72px 0; }
+/* 왼쪽 여백 목차 레일: 글자가 적힌 스크롤바. 여백이 충분할 때만 */
+.rail { display: none; position: fixed; left: max(16px, calc(50vw - 540px - 176px)); top: 50%; translate: 0 -50%; z-index: 5; flex-direction: column; padding-left: 14px; border-left: 2px solid var(--separator); }
+.rail a { font-size: 12px; line-height: 26px; color: var(--tertiary); padding-left: 10px; white-space: nowrap; transition: color .2s; }
+.rail a.g { font-weight: 600; color: var(--secondary); margin-top: 8px; }
+.rail a:hover, .rail a.on { color: var(--label); }
+.rail a.on { font-weight: 600; }
+.rail-thumb { position: absolute; left: -2px; top: 0; width: 2px; height: 26px; border-radius: 1px; background: var(--accent); }
+@media (min-width: 1400px) { .rail { display: flex; } }
 section > .wrap > .head { margin-bottom: 32px; }
 section > .wrap > .head p { color: var(--secondary); margin-top: 8px; }
 .sub { margin: 56px 0 20px; }
@@ -416,7 +421,6 @@ footer.end .links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap;
   .anat > header { flex-direction: column; }
   #hoody { --h: 560px; } #hoody .rig { --s: .82; --es: .45; }
   #yugi { --h: 420px; } #yugi .rig { --s: .6; --es: .38; }
-  .segmented a { padding: 4px 10px; }
   .cv-row { grid-template-columns: 1fr; gap: 4px; }
   .cv-2 { grid-template-columns: 1fr; }
   .cv-block { padding: 22px 20px 6px; }
@@ -428,15 +432,27 @@ footer.end .links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap;
 <nav>
   <div class="wrap">
     <strong>Junggyun Oh</strong>
-    <div class="segmented" role="tablist">
-      <a href="#work" class="on">업무</a>
-      <a href="#personal">개인</a>
-      <a href="#cv">이력</a>
-    </div>
   </div>
 </nav>
 
-<header class="hero">
+<aside class="rail" aria-label="페이지 목차">
+  <i class="rail-thumb"></i>
+  <a href="#top">소개</a>
+  <a href="#work" class="g">업무</a>
+  <a href="#w-drone">드론 스티칭</a>
+  <a href="#w-cctv">안전관제 CCTV</a>
+  <a href="#w-mall">유동인구 분석</a>
+  <a href="#w-home">스마트홈 Re-ID</a>
+  <a href="#w-floor">도면 채색</a>
+  <a href="#w-gal">AI 갤러리</a>
+  <a href="#personal" class="g">개인</a>
+  <a href="#sites">Chiral · Namba</a>
+  <a href="#hoody">Hoody</a>
+  <a href="#yugi">YugiTokenBar</a>
+  <a href="#cv" class="g">CV</a>
+</aside>
+
+<header class="hero" id="top">
   <div class="wrap">
     <p class="caption">AI / COMPUTER VISION ENGINEER · 2024.05 –</p>
     <h1>모델 선정에서<br>현장 배포까지.</h1>
@@ -787,7 +803,7 @@ face QC  sim 0.91 ✓</pre><div class="label"><b>Qwen-Image-Edit-2509</b><span>�
       <p>직접 기획하고 만들고 운영합니다.</p>
     </div>
 
-    <div class="sub">
+    <div class="sub" id="sites">
       <h3>운영 중인 사이트</h3>
       <p>실제 배포된 사이트입니다. 창 안에서 바로 스크롤해 보세요.</p>
     </div>
@@ -1060,13 +1076,18 @@ document.querySelectorAll('.anat').forEach(a => {
   addEventListener('resize', place);
 });
 
-// 세그먼트 컨트롤: 스크롤 위치에 따라 활성화
-const segs = [...document.querySelectorAll('.segmented a')], secs = segs.map(s => document.querySelector(s.hash));
-const segSync = () => {
-  const mid = scrollY + innerHeight / 2, i = Math.max(0, secs.findLastIndex(s => s.offsetTop <= mid));
-  segs.forEach((s, j) => s.classList.toggle('on', j === i));
+// 왼쪽 레일: 현재 위치 강조 + 항목 사이를 따라 움직이는 막대
+const rail = [...document.querySelectorAll('.rail a')], thumb = document.querySelector('.rail-thumb');
+const railSync = () => {
+  if (!thumb.offsetParent) return;
+  const mid = scrollY + innerHeight / 3, ys = rail.map(a => document.querySelector(a.hash).getBoundingClientRect().top + scrollY);
+  const i = Math.max(0, ys.findLastIndex(y => y <= mid)), next = ys[i + 1];
+  const f = next == null ? 0 : Math.min(1, (mid - ys[i]) / (next - ys[i]));
+  rail.forEach((a, j) => a.classList.toggle('on', j === i));
+  const a = rail[i], b = rail[i + 1] || a;
+  thumb.style.translate = `0 ${a.offsetTop + (b.offsetTop - a.offsetTop) * Math.max(0, f)}px`;
 };
-addEventListener('scroll', segSync, { passive: true }); addEventListener('load', segSync); segSync();
+addEventListener('scroll', railSync, { passive: true }); addEventListener('resize', railSync); addEventListener('load', railSync); railSync();
 
 // ---------- Hoody (Hoody_App Guide 화면 흐름 그대로) ----------
 const h = id => document.getElementById('h-' + id);
