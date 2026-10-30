@@ -89,12 +89,13 @@ section > .wrap > .head p { color: var(--secondary); margin-top: 8px; }
 .tag { font-size: 12px; padding: 2px 8px; border-radius: 6px; background: var(--fill); color: var(--secondary); }
 
 /* Nest — 실제 사이트를 작은 창으로 */
-.nest { display: grid; grid-template-columns: 1fr 1.5fr; gap: 32px; align-items: center; margin-bottom: 48px; }
+.nest { display: grid; gap: 20px; margin-bottom: 64px; }
+.nest > div:first-child { max-width: 720px; }
 .window { background: var(--surface); border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px var(--separator), 0 20px 50px rgba(0,0,0,.12); }
 .window .bar { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; background: var(--t2); border-bottom: 1px solid var(--separator); }
 .dots { display: flex; gap: 7px; } .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--t3); }
 .url { flex: 1; text-align: center; font-size: 12px; color: var(--secondary); background: var(--fill); border-radius: 6px; padding: 3px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.window iframe { display: block; width: 100%; height: 520px; border: 0; background: #fff; }
+.window iframe { display: block; width: 100%; height: 640px; border: 0; background: #fff; }
 
 /* Anatomy — 카드 + 등각 투영 + 판독값 */
 .anat { background: var(--surface); border-radius: var(--radius); margin-bottom: 32px; overflow: hidden; }
@@ -436,7 +437,7 @@ footer.end .links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap;
   .me { grid-template-columns: 1fr; gap: 24px; } .avatar { width: 96px; height: 96px; font-size: 40px; } .hero h1 .en { font-size: 22px; }
   h2 { font-size: 28px; }
   .hero p.lead { font-size: 19px; }
-  .nest { grid-template-columns: 1fr; gap: 16px; }
+  .nest { gap: 16px; }
   .grid { grid-template-columns: 1fr; }
   .window iframe { height: 440px; }
   .anat > header { flex-direction: column; }
