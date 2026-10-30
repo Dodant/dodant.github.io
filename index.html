@@ -55,9 +55,12 @@ nav strong { font-size: 17px; }
 
 header.hero { padding: 96px 0 72px; }
 .hero p.lead { font-size: 22px; color: var(--secondary); margin-top: 16px; max-width: 720px; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 40px; }
-.stat { background: var(--surface); border-radius: var(--radius); padding: 20px; }
-.stat b { display: block; font-size: 28px; font-weight: 700; letter-spacing: -.01em; }
+.me { display: grid; grid-template-columns: 160px 1fr; gap: 48px; align-items: start; }
+.avatar { width: 160px; height: 160px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; font-size: 64px; font-weight: 600; }
+.hero h1 .en { display: block; font-size: 28px; font-weight: 600; letter-spacing: 0; color: var(--secondary); margin-top: 8px; }
+.hero .role { font-size: 17px; margin-top: 12px; }
+.hero p.lead { word-break: keep-all; }
+.me-links { display: flex; gap: 20px; margin-top: 20px; font-size: 17px; }
 
 section { padding: 72px 0; }
 /* 왼쪽 여백 목차 레일: 글자가 적힌 스크롤바. 여백이 충분할 때만 */
@@ -413,6 +416,7 @@ footer.end .links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap;
 
 @media (max-width: 760px) {
   header.hero { padding: 56px 0 40px; }
+  .me { grid-template-columns: 1fr; gap: 24px; } .avatar { width: 96px; height: 96px; font-size: 40px; } .hero h1 .en { font-size: 22px; }
   h2 { font-size: 28px; }
   .hero p.lead { font-size: 19px; }
   .nest { grid-template-columns: 1fr; gap: 16px; }
@@ -453,15 +457,14 @@ footer.end .links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap;
 </aside>
 
 <header class="hero" id="top">
-  <div class="wrap">
-    <p class="caption">AI / COMPUTER VISION ENGINEER · 2024.05 –</p>
-    <h1>모델 선정에서<br>현장 배포까지.</h1>
-    <p class="lead">생성형 이미지 편집, 멀티카메라 영상 분석, LLM·VLM 에이전트. 2년 6개월간 6개 과제를 경량화 → 서빙 → 현장 적용까지 끝냈습니다.</p>
-    <div class="stats">
-      <div class="stat"><b>259 → 0.6 ms</b><span class="caption">24채널 CCTV 프레임 지터</span></div>
-      <div class="stat"><b>240 → 1.8 px</b><span class="caption">드론 스티칭 재투영 오차</span></div>
-      <div class="stat"><b>GPU 1장</b><span class="caption">FLUX·Qwen 4bit 상주 서빙</span></div>
-      <div class="stat"><b>논문 2 · 특허 2</b><span class="caption">국내 학회 · 출원</span></div>
+  <div class="wrap me">
+    <span class="avatar" aria-hidden="true">오</span>
+    <div>
+      <p class="caption">AI / COMPUTER VISION ENGINEER · 2024.05 –</p>
+      <h1>오중균 <span class="en">Junggyun Oh</span></h1>
+      <p class="role">HDC Labs AI Lab · 대리</p>
+      <p class="lead">GIST에서 LLM으로 학습 데이터를 만들어 한국수어 번역을 개선하는 연구를 했고, 지금은 연구용 모델을 현장에서 돌아가는 시스템으로 옮기는 일을 합니다. 퇴근 후에는 iOS·macOS 앱과 웹 서비스를 직접 만들어 배포합니다.</p>
+      <p class="me-links"><a href="mailto:ohho0506@gmail.com">이메일</a><a href="https://github.com/Dodant" target="_blank" rel="noopener">GitHub ↗</a><a href="#cv">이력 ↓</a></p>
     </div>
   </div>
 </header>
