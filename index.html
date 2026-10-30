@@ -387,6 +387,16 @@ section > .wrap > .head p { color: var(--secondary); margin-top: 8px; }
 .gl-tools { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; flex: none; }
 .gl-tools .wd-btn { background: rgba(255,255,255,.12); }
 .gl-tools .wd-btn.on { background: #2997ff; }
+/* 직접 조작 요소 */
+.wd-range { display: block; width: 100%; margin-top: 4px; accent-color: #0071e3; }
+.wd-num { display: flex; align-items: center; gap: 6px; font-size: 10px; white-space: nowrap; }
+.wd-num input { width: 84px; accent-color: #2997ff; }
+.wd-num b { min-width: 16px; font-variant-numeric: tabular-nums; }
+.dr-tile { cursor: pointer; } .dr-tile.sel { outline: 2px solid #ffd60a; outline-offset: -2px; z-index: 1; }
+#cc-scene { cursor: ew-resize; touch-action: none; }
+#ml-svg [data-p], #ml-bars [data-i], #hm-ppl [data-p] { cursor: pointer; }
+.fl-cand i { cursor: pointer; } .fl-cand i.on { box-shadow: 0 0 0 2px #0071e3; }
+.gl-canvas { cursor: ns-resize; touch-action: none; }
 /* 카드에서 해부도로 가는 링크 */
 .card .demo { font-size: 15px; margin-top: 8px; }
 @media (max-width: 760px) { .anat.wide { --h: 330px; } .anat.wide .rig { --s: .56; --es: .34; } }
@@ -580,7 +590,7 @@ footer.end .links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap;
     <!-- 1. 드론 스티칭 -->
     <article class="anat wide" id="w-drone" data-exploded="false">
       <header>
-        <div><h3>건물 외벽 드론 스티칭 에이전트</h3><p class="hint">‘전역 BA 실행’을 눌러 아래로 갈수록 어긋난 타일이 한 번에 맞춰지는 걸 보세요 · 균열 표시 켜기</p></div>
+        <div><h3>건물 외벽 드론 스티칭 에이전트</h3><p class="hint">‘전역 BA 실행’을 누르거나 오른쪽 슬라이더로 반복을 한 단계씩 넘겨보세요 · 타일을 누르면 그 타일의 오차 · 균열 표시 켜기</p></div>
         <button class="btn explode">분해</button>
       </header>
       <p class="desc">호모그래피를 줄줄이 이어 붙이면 아래 줄로 갈수록 오차가 쌓입니다(체인 드리프트). 전역 Bundle Adjustment를 numpy로 직접 구현해 모든 타일을 한 번에 풀고, VLM 에이전트가 결과를 보고 파라미터를 고칩니다.</p>
@@ -606,7 +616,7 @@ converged ✓</pre><div class="label"><b>전역 Bundle Adjustment</b><span>numpy
               <div class="wd-side">
                 <div class="wd-k"><small>재투영 오차 (px)</small><b id="dr-err">240.0</b></div>
                 <div class="wd-k"><small>이음매 최대 오차 (px)</small><b id="dr-seam">13.3</b></div>
-                <div class="wd-k"><small>BA 반복</small><b id="dr-it">0</b><i>/ 12</i></div>
+                <div class="wd-k"><small>BA 반복</small><b id="dr-it">0</b><i>/ 12</i><input class="wd-range" id="dr-scrub" type="range" min="0" max="12" value="0" aria-label="BA 반복 단계"></div>
                 <div class="wd-log" id="dr-log"></div>
               </div>
             </div>
@@ -619,7 +629,7 @@ converged ✓</pre><div class="label"><b>전역 Bundle Adjustment</b><span>numpy
     <!-- 2. CCTV -->
     <article class="anat wide" id="w-cctv" data-exploded="false">
       <header>
-        <div><h3>건설현장 안전관제 AI CCTV</h3><p class="hint">상단에서 ‘레거시 / 멀티프로세스’를 바꿔 영상이 끊기는 정도를 비교하세요 · 지게차가 트럭에 붙으면 반대편 위험구역이 켜집니다</p></div>
+        <div><h3>건설현장 안전관제 AI CCTV</h3><p class="hint">‘레거시 / 멀티프로세스’와 채널 수를 바꿔 끊김을 비교하세요 · 장면을 끌어 작업자를 옮겨보세요. 지게차가 트럭에 붙었을 때 위험구역에 들어가면 알람</p></div>
         <button class="btn explode">분해</button>
       </header>
       <p class="desc">최대 24채널 RTSP 관제. 단일 프로세스(GIL 병목)를 추론 서버 1 + 카메라 워커 ⌈N/5⌉ + 웹 1로 무중단 전환했고, 추가 모델 없이 하역 위험구역 알고리즘을 만들어 현장에 배포했습니다.</p>
@@ -635,7 +645,8 @@ workers 5 · cams/worker ≤ 5
 p95 frame 34 ms</pre><div class="label"><b>카메라 워커 ⌈N/5⌉</b><span>프로세스 분리 · /health · /metrics</span></div></div>
         <div class="layer screen mac" style="--z:3"><div class="label"><b>관제 웹 (HLS H.264)</b><span>알람 7종 · PTZ 자동제어</span></div>
           <div class="wd dark">
-            <div class="wd-bar"><b>안전관제</b><small>건설현장 · 24ch</small><span class="sp"></span>
+            <div class="wd-bar"><b>안전관제</b><small>건설현장</small><span class="sp"></span>
+              <label class="wd-num">채널 <input type="range" id="cc-ch" min="4" max="24" step="4" value="24" aria-label="채널 수"><b id="cc-chn">24</b></label>
               <div class="wd-seg" id="cc-mode"><button data-m="legacy">레거시 단일 프로세스</button><button data-m="multi" class="on">멀티프로세스</button></div></div>
             <div class="wd-body">
               <div class="wd-main">
@@ -646,6 +657,7 @@ p95 frame 34 ms</pre><div class="label"><b>카메라 워커 ⌈N/5⌉</b><span>�
                 <div class="wd-k"><small>프레임 지터</small><b id="cc-jit">0.6</b><i>ms</i></div>
                 <div class="wd-k"><small>외부망 대역폭</small><b id="cc-bw">2</b><i>Mbps</i></div>
                 <div class="wd-k"><small>CPU</small><b id="cc-cpu">5</b><i>%</i></div>
+                <div class="wd-k"><small>프로세스</small><b id="cc-wk">7</b><i id="cc-wki"></i></div>
                 <div class="wd-log" id="cc-log"></div>
               </div>
             </div>
@@ -658,7 +670,7 @@ p95 frame 34 ms</pre><div class="label"><b>카메라 워커 ⌈N/5⌉</b><span>�
     <!-- 3. 유동인구 -->
     <article class="anat wide" id="w-mall" data-exploded="false">
       <header>
-        <div><h3>아이파크몰 CCTV 유동인구 분석</h3><p class="hint">출입구 두 줄 카운팅 선을 지나면 In/Out이 올라갑니다 · 히트맵 · 일행 표시를 켜보세요 · 막대에 마우스를 올리면 값</p></div>
+        <div><h3>아이파크몰 CCTV 유동인구 분석</h3><p class="hint">사람을 누르면 그 글로벌 ID의 동선을 따라갑니다 · 아래 막대를 누르면 그 시간대 혼잡도로 바뀝니다 · 히트맵 · 일행 표시</p></div>
         <button class="btn explode">분해</button>
       </header>
       <p class="desc">전 카메라에서 같은 사람에게 하나의 글로벌 ID를 주고, 출입구 듀얼 라인으로 In/Out을 셉니다. 트랙 봉합과 밀도 게이트 클러스터링으로 같이 다니는 일행을 찾습니다.</p>
@@ -686,7 +698,7 @@ lag 40 ms</pre><div class="label"><b>rtsp-ingestion</b><span>공유메모리 + R
                 <div class="wd-k"><small>Out</small><b id="ml-out">0</b></div>
                 <div class="wd-k"><small>현재 체류</small><b id="ml-now">0</b><i>명</i></div>
                 <div class="wd-k"><small>일행 그룹</small><b id="ml-grp">0</b></div>
-                <div class="wd-log" style="opacity:.7">시간대별 입장 (아래 막대) · 데모 데이터</div>
+                <div class="wd-log" id="ml-log"><p style="opacity:.7">시간대별 입장 (아래 막대) · 데모 데이터</p></div>
               </div>
             </div>
           </div>
@@ -698,7 +710,7 @@ lag 40 ms</pre><div class="label"><b>rtsp-ingestion</b><span>공유메모리 + R
     <!-- 4. 스마트홈 -->
     <article class="anat wide" id="w-home" data-exploded="false">
       <header>
-        <div><h3>스마트홈 AI 에이전트 · HumanID-Track</h3><p class="hint">방을 누르면 ‘엄마’가 그 방으로 이동합니다 · Top-1과 Top-5 투표를 바꿔 이름이 틀리는 빈도를 비교하세요</p></div>
+        <div><h3>스마트홈 AI 에이전트 · HumanID-Track</h3><p class="hint">사람을 눌러 고르고 방을 누르면 그 방으로 이동합니다 · Top-1 / Top-5 투표, 등록 품질 필터를 바꿔 이름이 틀리는 빈도를 비교하세요</p></div>
         <button class="btn explode">분해</button>
       </header>
       <p class="desc">집 안 카메라 4대에서 사람이 방을 옮겨 다녀도 같은 사람으로 이어 붙이는 모듈. Re-ID를 Top-1 매칭에서 Top-5 투표로 바꾸고 등록 품질 필터를 넣어 매칭 정확도를 약 40%에서 70%로 올렸습니다(내부 평가).</p>
@@ -715,6 +727,7 @@ cos 0.61 ≥ 0.45
         <div class="layer screen mac" style="--z:3"><div class="label"><b>멀티카메라 뷰</b><span>카메라 4대 · 배치 추론</span></div>
           <div class="wd">
             <div class="wd-bar"><b>HumanID-Track</b><small>카메라 4대</small><span class="sp"></span>
+              <button class="wd-btn on" id="hm-q">등록 품질 필터</button>
               <div class="wd-seg" id="hm-mode"><button data-m="1">Top-1</button><button data-m="5" class="on">Top-5 투표</button></div></div>
             <div class="wd-body">
               <div class="wd-main"><div class="hm-plan"><svg id="hm-svg" viewBox="0 0 320 200" aria-label="집 평면도"></svg></div></div>
@@ -733,7 +746,7 @@ cos 0.61 ≥ 0.45
     <!-- 5. 도면 채색 -->
     <article class="anat wide" id="w-floor" data-exploded="false">
       <header>
-        <div><h3>건축 도면 자동 채색</h3><p class="hint">단계 버튼을 누르고, 화면을 좌우로 끌어 흑백 원본과 비교하세요</p></div>
+        <div><h3>건축 도면 자동 채색</h3><p class="hint">단계 버튼을 누르고, 화면을 좌우로 끌어 흑백 원본과 비교하세요 · 오른쪽 생성 후보를 골라 정합 전후를 보세요</p></div>
         <button class="btn explode">분해</button>
       </header>
       <p class="desc">채색은 생성 모델이, 벽체·치수·한글은 고전 CV가 맡습니다. 생성 모델은 도면을 살짝 돌리고 글자를 뭉개기 때문에, 정합으로 회전을 지우고 OCR로 원본 한글을 다시 얹습니다. 이 분담 구조가 특허 청구의 핵심입니다.</p>
@@ -763,7 +776,7 @@ scale 1.002 · rot −0.4°
                 <div class="wd-k"><small>회전 오차</small><b id="fl-rot">0.0°</b></div>
                 <div class="wd-k"><small>한글 라벨 보존</small><b id="fl-ocr">7 / 7</b></div>
                 <small style="opacity:.65">생성 후보 비교</small>
-                <div class="fl-cand"><i></i><i></i><i></i></div>
+                <div class="fl-cand" id="fl-cand"><i data-c="0" class="on"></i><i data-c="1"></i><i data-c="2"></i></div>
                 <div class="wd-log" id="fl-log"></div>
               </div>
             </div>
@@ -776,7 +789,7 @@ scale 1.002 · rot −0.4°
     <!-- 6. AI 갤러리 -->
     <article class="anat wide" id="w-gal" data-exploded="false">
       <header>
-        <div><h3>스마트 AI 갤러리 (디지털 AI 액자)</h3><p class="hint">액자 비율을 바꾸면 그림 바깥이 아웃페인팅됩니다(점선 안이 원본) · 화풍 미리보기는 CSS 필터로 흉내 냈습니다</p></div>
+        <div><h3>스마트 AI 갤러리 (디지털 AI 액자)</h3><p class="hint">액자 비율을 바꾸면 그림 바깥이 아웃페인팅됩니다(점선 안이 원본) · 원본을 위아래로 끌어 위치를 바꿔보세요 · 화풍은 CSS 필터로 흉내</p></div>
         <button class="btn explode">분해</button>
       </header>
       <p class="desc">사진을 액자 비율에 맞게 바깥으로 그려 넓히고 20여 종 화풍으로 바꾸는 생성형 API. GAN → SD → FLUX Kontext → Qwen-Image-Edit 순으로 모델을 바꾸며 인물·텍스트 보존을 확보했고, 4bit 양자화로 GPU 한 장에 전체 파이프라인을 올렸습니다.</p>
@@ -800,7 +813,7 @@ face QC  sim 0.91 ✓</pre><div class="label"><b>Qwen-Image-Edit-2509</b><span>�
           </div>
         </div>
       </div></div>
-      <footer class="readout"><span>비율 <b id="gl-r-ratio">16:9</b></span><span>화풍 <b id="gl-r-style">유화</b></span><span>작업 큐 <b id="gl-r-q">0 / 400</b></span><span>실측 <b>GPU 1장 상주 · 비교 데이터셋 약 6,000장</b></span></footer>
+      <footer class="readout"><span>비율 <b id="gl-r-ratio">16:9</b></span><span>원본 위치 <b id="gl-r-pos">가운데</b></span><span>화풍 <b id="gl-r-style">유화</b></span><span>작업 큐 <b id="gl-r-q">0 / 400</b></span><span>실측 <b>GPU 1장 상주 · 비교 데이터셋 약 6,000장</b></span></footer>
     </article>
   </div>
 </section>
@@ -1419,10 +1432,17 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
       d.style.setProperty('--seam', (.12 + .5 * k).toFixed(2));
     });
     $('dr-err').textContent = err.toFixed(1); $('dr-r-err').textContent = err.toFixed(1) + ' px';
-    $('dr-seam').textContent = (3.5 + 9.8 * (1 - t) ** 2).toFixed(1); $('dr-it').textContent = Math.round(t * 12);
+    $('dr-seam').textContent = (3.5 + 9.8 * (1 - t) ** 2).toFixed(1); $('dr-it').textContent = $('dr-scrub').value = Math.round(t * 12);
     while (said < LOG.length && t >= LOG[said][0]) logTo($('dr-log'), LOG[said++][1]);
   };
   live(view, dt => { if (t !== target) { t = still ? target : Math.min(target, t + dt / 2.4); draw(); } });
+  $('dr-scrub').oninput = e => { target = t = e.target.value / 12; draw(); };
+  // 타일별 오차: 아래 줄·오른쪽일수록 드리프트가 큼 (데모 값)
+  view.onclick = e => {
+    const d = e.target.closest('.dr-tile'); if (!d) return; const { r, c } = tiles.find(x => x.d === d);
+    tiles.forEach(x => x.d.classList.toggle('sel', x.d === d));
+    logTo($('dr-log'), `[타일 ${r + 1}-${c + 1}] 재투영 오차 ${(1.2 + (r * r * 2.2 + c * 1.2 + r * 4) * 4 * (1 - t) ** 3).toFixed(1)} px`);
+  };
   view.closest('.wd').querySelector('.wd-bar').onclick = e => {
     const a = e.target.closest('[data-dr]')?.dataset.dr; if (!a) return;
     if (a === 'ba') { target = 1; if (still) t = 1; }
@@ -1454,17 +1474,29 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
     ['CH15 신호수', '<rect x="48" y="24" width="9" height="24" rx="3" fill="#ff9f0a"/><path d="M57 28 L72 18" stroke="#ff453a" stroke-width="2"/><rect x="44" y="16" width="32" height="36" fill="none" stroke="#30d158"/>'],
     ['CH21 자재 야적장', '<rect x="18" y="34" width="30" height="16" fill="#6b5a3a"/><rect x="54" y="30" width="34" height="20" fill="#7b828c"/>']];
   $('cc-minis').innerHTML = MINI.map(([n, s]) => `<div class="cc-mini"><svg viewBox="0 0 110 60"><rect width="110" height="60" fill="#2c313a"/>${s}</svg><span>${n}</span></div>`).join('');
-  const MODES = { legacy: { name: '레거시 단일 프로세스', jit: '259', bw: '35', cpu: '30–50', fps: 14 }, multi: { name: '멀티프로세스', jit: '0.6', bw: '2', cpu: '5', fps: 30 } };
-  let mode = 'multi', sim = 0, nextAt = 0, frames = [], alarms = 0, inZone = false;
-  const setMode = m => { mode = m; const M = MODES[m]; $('cc-jit').textContent = M.jit; $('cc-bw').textContent = M.bw; $('cc-cpu').textContent = M.cpu; $('cc-r-mode').textContent = M.name; };
+  // 24채널 실측값을 채널 수에 비례해 줄임 (레거시) · 멀티는 워커 ⌈N/5⌉ + 추론 1 + 웹 1
+  let mode = 'multi', N = 24, sim = 0, nextAt = 0, frames = [], alarms = 0, inZone = false, hand = null, handUntil = 0, M;
+  const setMode = m => {
+    mode = m; const k = N / 24;
+    M = m === 'legacy' ? { name: '레거시 단일 프로세스', jit: Math.round(259 * k), bw: Math.round(35 * k), cpu: `${Math.round(30 * k)}–${Math.round(50 * k)}`, fps: Math.round(30 - 16 * k), wk: 1, wki: '단일' }
+      : { name: '멀티프로세스', jit: 0.6, bw: Math.max(1, Math.round(2 * k)), cpu: Math.max(1, Math.round(5 * k)), fps: 30, wk: Math.ceil(N / 5) + 2, wki: `워커 ${Math.ceil(N / 5)} + 추론 + 웹` };
+    $('cc-jit').textContent = M.jit; $('cc-bw').textContent = M.bw; $('cc-cpu').textContent = M.cpu; $('cc-wk').textContent = M.wk; $('cc-wki').textContent = M.wki; $('cc-r-mode').textContent = M.name;
+  };
   $('cc-mode').onclick = e => { const b = e.target.closest('button'); if (b) { segOn($('cc-mode'), b); setMode(b.dataset.m); } };
+  $('cc-ch').oninput = e => { N = +e.target.value; $('cc-chn').textContent = N; setMode(mode); };
+  // 장면을 끌면 작업자가 따라옴, 놓고 2.5초 뒤 자동으로 복귀
+  const toX = e => { const r = svg.getBoundingClientRect(); return Math.max(0, Math.min(390, (e.clientX - r.left) / r.width * 400 - 5)); };
+  svg.onpointerdown = e => { svg.setPointerCapture(e.pointerId); hand = toX(e); handUntil = Infinity; render(); };
+  svg.onpointermove = e => { if (handUntil === Infinity) { hand = toX(e); render(); } };
+  svg.onpointerup = svg.onpointercancel = () => handUntil = performance.now() + 2500;
   const render = () => {
     const ph = (sim % 10) / 10, fx = 30 + 70 * Math.min(1, Math.max(0, Math.sin(ph * Math.PI * 2) * 1.6 + .2)); // 지게차 접근·후진
-    const docked = fx > 92, mx = 350 - 50 * Math.max(0, Math.sin(((sim + 3) % 10) / 10 * Math.PI * 2));
+    if (hand != null && performance.now() > handUntil) hand = null;
+    const docked = fx > 92, mx = hand ?? 350 - 50 * Math.max(0, Math.sin(((sim + 3) % 10) / 10 * Math.PI * 2));
     $('cc-fork').setAttribute('transform', `translate(${fx - 30},0)`); $('cc-man').setAttribute('transform', `translate(${mx},20)`);
     $('cc-zone').setAttribute('opacity', docked ? 1 : 0); $('cc-zt').setAttribute('opacity', docked ? 1 : 0);
     $('cc-r-zone').textContent = docked ? '활성 (지게차 접안)' : '대기';
-    const hit = docked && mx < 345;
+    const hit = docked && mx > 285 && mx < 345;
     if (hit && !inZone) { alarms++; $('cc-r-al').textContent = alarms; logTo($('cc-log'), `<span class="wd-alarm">⚠ CH07 위험구역 진입</span> · ${new Date().toTimeString().slice(0, 8)}`); }
     inZone = hit;
   };
@@ -1472,7 +1504,7 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
     sim += dt;
     if (now < nextAt) return;
     // ponytail: 레거시는 평균 ~14fps가 되도록 기본 간격 + 가끔 큰 지터(최대 259ms)
-    nextAt = now + (mode === 'legacy' ? 58 + (Math.random() < .1 ? Math.random() * 259 : Math.random() * 18) : 1000 / 30);
+    nextAt = now + (mode === 'legacy' ? 850 / M.fps + (Math.random() < .1 ? Math.random() * M.jit : Math.random() * 18) : 1000 / 30);
     frames.push(now); while (frames[0] < now - 1000) frames.shift();
     $('cc-fps').textContent = frames.length + ' fps'; render();
   });
@@ -1489,16 +1521,18 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
       return v.map(([a, b, c, d]) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#2a78d6" stroke-width="1.5"/>`).join('') + `<text x="${x + (k === 'C' ? -24 : 4)}" y="${y + (k === 'A' ? 24 : -14)}" font-size="8" fill="#52514e">출입구 ${k}</text>`; }).join('')
     + '<g id="ml-ppl"></g>';
   const heatG = $('ml-heat'), ppl = $('ml-ppl'), heat = new Float32Array(32 * 17);
-  let people = [], gid = 412, IN = 0, OUT = 0, groups = 0, showHeat = false, showGrp = true, showId = true, spawnT = 0;
+  let people = [], gid = 412, IN = 0, OUT = 0, groups = 0, showHeat = false, showGrp = true, showId = true, spawnT = 0, sel = null, busy = 1;
   const pick = a => a[Math.floor(Math.random() * a.length)];
   const spawn = () => {
     const e = pick(Object.keys(ENT)), x = pick(Object.keys(ENT).filter(k => k !== e)), n = Math.random() < .3 ? 2 + (Math.random() < .4) : 1;
     const route = [ENT[e], pick(STORES), pick(STORES), ENT[x]], grp = n > 1 ? { id: ++groups, n } : null;
-    for (let i = 0; i < n; i++) people.push({ id: 'G-' + gid++, route, seg: 0, f: 0, sp: 22 + Math.random() * 10, off: [(i - (n - 1) / 2) * 6, i * 3], grp, x: ENT[e][0], y: ENT[e][1] });
+    for (let i = 0; i < n; i++) people.push({ id: 'G-' + gid++, route, seg: 0, f: 0, sp: 22 + Math.random() * 10, off: [(i - (n - 1) / 2) * 6, i * 3], grp, x: ENT[e][0], y: ENT[e][1], e, age: 0, trail: [] });
     IN += n; $('ml-grp').textContent = groups;
   }
   const draw = () => {
-    ppl.innerHTML = people.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#2a78d6" stroke="#fff" stroke-width="1"/>${showId ? `<text x="${p.x + 4}" y="${p.y - 4}" font-size="6" fill="#52514e">${p.id}</text>` : ''}`).join('')
+    const s = people.find(p => p.id === sel);
+    ppl.innerHTML = (s ? `<polyline points="${s.trail.join(' ')} ${s.x},${s.y}" fill="none" stroke="#eb6834" stroke-width="1.5" stroke-linejoin="round"/><circle cx="${s.x}" cy="${s.y}" r="7" fill="none" stroke="#eb6834" stroke-width="1.5"/>` : '')
+      + people.map(p => `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#2a78d6" stroke="#fff" stroke-width="1"/>${showId || p === s ? `<text x="${p.x + 4}" y="${p.y - 4}" font-size="6" fill="#52514e">${p.id}</text>` : ''}<circle data-p="${p.id}" cx="${p.x}" cy="${p.y}" r="8" fill="transparent"/>`).join('')
       + (showGrp ? [...new Set(people.filter(p => p.grp).map(p => p.grp))].map(g => { const m = people.filter(p => p.grp === g), cx = m.reduce((a, p) => a + p.x, 0) / m.length, cy = m.reduce((a, p) => a + p.y, 0) / m.length;
         return `<circle cx="${cx}" cy="${cy}" r="${8 + m.length * 2}" fill="none" stroke="#eb6834" stroke-width="1.2" stroke-dasharray="3 2"/><text x="${cx + 10}" y="${cy + 12}" font-size="7" fill="#1d1d1f">일행 ${m.length}</text>`; }).join('') : '');
     $('ml-in').textContent = IN.toLocaleString(); $('ml-out').textContent = OUT.toLocaleString(); $('ml-now').textContent = people.length;
@@ -1509,11 +1543,12 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
     heatG.innerHTML = showHeat ? [...heat].map((v, i) => v ? `<rect x="${(i % 32) * 10}" y="${Math.floor(i / 32) * 10}" width="10" height="10" fill="#2a78d6" opacity="${(v / max * .55).toFixed(2)}"/>` : '').join('') : '';
   }
   live(svg, dt => {
-    if ((spawnT -= dt) <= 0 && people.length < 26) { spawn(); spawnT = .5 + Math.random() * .9; }
+    if ((spawnT -= dt) <= 0 && people.length < 26 * busy) { spawn(); spawnT = (.5 + Math.random() * .9) / busy; }
     people = people.filter(p => {
       const [a, b] = [p.route[p.seg], p.route[p.seg + 1]], L = Math.hypot(b[0] - a[0], b[1] - a[1]);
-      p.f += p.sp * dt / L;
-      if (p.f >= 1) { p.seg++; p.f = 0; if (p.seg >= p.route.length - 1) { OUT++; return false; } }
+      p.f += p.sp * dt / L; p.age += dt;
+      if (p.id === sel) { const l = p.trail.at(-1); if (!l || Math.hypot(l[0] - p.x, l[1] - p.y) > 3) p.trail.push([p.x.toFixed(1), p.y.toFixed(1)]); }
+      if (p.f >= 1) { p.seg++; p.f = 0; if (p.seg >= p.route.length - 1) { OUT++; if (p.id === sel) { logTo($('ml-log'), `${p.id} 퇴장 · 체류 ${p.age.toFixed(0)}초 · 같은 ID 유지`, 4); sel = null; } return false; } }
       const [c, d] = [p.route[p.seg], p.route[p.seg + 1]];
       p.x = c[0] + (d[0] - c[0]) * p.f + p.off[0]; p.y = c[1] + (d[1] - c[1]) * p.f + p.off[1];
       const hi = Math.floor(p.y / 10) * 32 + Math.floor(p.x / 10); if (hi >= 0 && hi < heat.length) heat[hi] += dt;
@@ -1521,6 +1556,9 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
     });
     draw(); if (showHeat && Math.random() < .1) drawHeat();
   });
+  // 움직이는 점은 매 프레임 다시 그려지므로 click 대신 pointerdown
+  svg.onpointerdown = e => { const p = people.find(x => x.id === e.target.dataset?.p); sel = p?.id ?? null;
+    if (p) { p.trail = []; logTo($('ml-log'), `추적 ${p.id} · 출입구 ${p.e} 입장 · ${p.grp ? '일행 ' + p.grp.n + '명' : '단독'}`, 4); } draw(); };
   svg.closest('.wd').querySelector('.wd-bar').onclick = e => {
     const b = e.target.closest('[data-ml]'); if (!b) return; b.classList.toggle('on');
     const on = b.classList.contains('on'); ({ heat: () => { showHeat = on; drawHeat(); }, group: () => showGrp = on, id: () => showId = on })[b.dataset.ml](); draw();
@@ -1528,8 +1566,11 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
   // 시간대별 입장: 한 계열 · 한 축 · 막대마다 툴팁 (데모 값)
   const HRS = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], V = [420, 760, 1340, 1610, 1480, 1390, 1520, 1700, 1880, 1650, 1120, 540], mx = 1900;
   const bars = $('ml-bars'), tip = $('ml-tip'), bw = 400 / HRS.length;
-  bars.innerHTML = '<line x1="0" y1="58" x2="400" y2="58" stroke="#c7c7cc"/>' + HRS.map((h, i) => { const ht = V[i] / mx * 50;
-    return `<rect x="${i * bw + 6}" y="${58 - ht}" width="${bw - 12}" height="${ht}" rx="2" fill="#2a78d6" opacity="${i === 8 ? 1 : .55}"/><rect data-i="${i}" x="${i * bw}" y="0" width="${bw}" height="70" fill="transparent"/><text x="${i * bw + bw / 2}" y="68" font-size="7" text-anchor="middle" fill="#52514e">${h}시</text>`; }).join('');
+  const drawBars = hi => bars.innerHTML = '<line x1="0" y1="58" x2="400" y2="58" stroke="#c7c7cc"/>' + HRS.map((h, i) => { const ht = V[i] / mx * 50;
+    return `<rect x="${i * bw + 6}" y="${58 - ht}" width="${bw - 12}" height="${ht}" rx="2" fill="#2a78d6" opacity="${i === hi ? 1 : .55}"/><rect data-i="${i}" x="${i * bw}" y="0" width="${bw}" height="70" fill="transparent"/><text x="${i * bw + bw / 2}" y="68" font-size="7" text-anchor="middle" fill="#52514e">${h}시</text>`; }).join('');
+  drawBars(8);
+  // 막대를 누르면 그 시간대 입장 수에 맞춰 생성 속도·최대 인원이 바뀜
+  bars.onclick = e => { const i = e.target.dataset?.i; if (i === undefined) return; busy = V[i] / 1300; drawBars(+i); logTo($('ml-log'), `${HRS[i]}시 혼잡도로 전환 · 입장 ${V[i].toLocaleString()}명/시`, 4); };
   bars.onpointermove = e => { const i = e.target.dataset?.i; if (i === undefined) return tip.style.opacity = 0;
     tip.textContent = `${HRS[i]}시 · 입장 ${V[i].toLocaleString()}명`; tip.style.opacity = 1; tip.style.left = Math.min(70, (+i / HRS.length) * 100) + '%'; tip.style.top = '-18px'; };
   bars.onpointerleave = () => tip.style.opacity = 0;
@@ -1544,12 +1585,13 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
   const NAMES = ['엄마', '아빠', '아들'], COL = ['#2a78d6', '#eb6834', '#1baf7a'];
   svg.innerHTML = Object.entries(ROOMS).map(([n, [x, y, w, h]]) => `<rect class="room" data-room="${n}" x="${x}" y="${y}" width="${w}" height="${h}" fill="transparent" stroke="#1d1d1f" stroke-width="3"/><text x="${x + w / 2}" y="${y + h - 8}" text-anchor="middle" font-size="9" fill="#8e8e93" pointer-events="none">${n}</text>`).join('')
     + Object.values(CAMS).map(([x, y, a]) => `<path d="M${x} ${y} l${Math.cos((a - 25) * Math.PI / 180) * 70} ${Math.sin((a - 25) * Math.PI / 180) * 70} A70 70 0 0 1 ${x + Math.cos((a + 25) * Math.PI / 180) * 70} ${y + Math.sin((a + 25) * Math.PI / 180) * 70} Z" fill="rgba(0,113,227,.07)" pointer-events="none"/><rect x="${x - 4}" y="${y - 3}" width="8" height="6" rx="1.5" fill="#1d1d1f" pointer-events="none"/>`).join('')
-    + '<g id="hm-ppl" pointer-events="none"></g>';
+    + '<g id="hm-ppl"></g>';
   const center = r => { const [x, y, w, h] = ROOMS[r]; return [x + 20 + Math.random() * (w - 40), y + 18 + Math.random() * (h - 44)]; };
   const ppl = NAMES.map((n, i) => { const r = Object.keys(ROOMS)[i]; const [x, y] = center(r); return { n, i, room: r, x, y, tx: x, ty: y, label: n, ok: true, conf: .9, wait: 1 + i }; });
-  let topk = 5, hist = [], errs = 0;
+  let topk = 5, hist = [], errs = 0, ctl = 0, qf = true;
   const reid = p => {
-    const ok = Math.random() < (topk === 5 ? .7 : .4);
+    // ponytail: 품질 필터를 끄면 등록 이미지가 흐려져 정확도가 깎인다고 가정한 데모 값
+    const ok = Math.random() < (topk === 5 ? .7 : .4) - (qf ? 0 : .12);
     p.ok = ok; p.label = ok ? p.n : NAMES.filter(x => x !== p.n)[Math.floor(Math.random() * 2)]; p.conf = ok ? .75 + Math.random() * .2 : .5 + Math.random() * .2;
     hist.push(ok); if (hist.length > 20) hist.shift(); if (!ok) errs++;
     const acc = Math.round(hist.filter(Boolean).length / hist.length * 100) + '%';
@@ -1557,7 +1599,9 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
     logTo($('hm-log'), `[Kafka] ${p.room} · 입실 · ${p.label} (${p.conf.toFixed(2)})${ok ? '' : ' <span class="wd-alarm">✕ 실제 ' + p.n + '</span>'}`);
   };
   const move = (p, room) => { if (room !== p.room) { p.room = room; p.moved = true; } [p.tx, p.ty] = center(room); };
-  svg.onclick = e => { const r = e.target.closest('[data-room]'); if (r) { move(ppl[0], r.dataset.room); ppl[0].wait = 4; } };
+  svg.onclick = e => { const r = e.target.closest('[data-room]'); if (r) { move(ppl[ctl], r.dataset.room); ppl[ctl].wait = 4; } };
+  svg.onpointerdown = e => { const i = e.target.dataset?.p; if (i !== undefined) { ctl = +i; logTo($('hm-log'), `조작 대상 → ${NAMES[ctl]}`); } };
+  $('hm-q').onclick = e => { qf = !qf; e.target.classList.toggle('on', qf); hist = []; errs = 0; logTo($('hm-log'), `등록 품질 필터 ${qf ? '켬' : '끔 (흐린·가려진 등록 이미지 포함)'}`); };
   $('hm-mode').onclick = e => { const b = e.target.closest('button'); if (!b) return; segOn($('hm-mode'), b); topk = +b.dataset.m; hist = []; errs = 0; $('hm-r-mode').textContent = topk === 5 ? 'Top-5 투표' : 'Top-1'; };
   live(svg, dt => {
     ppl.forEach(p => {
@@ -1565,7 +1609,7 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
       const k = Math.min(1, dt * 2.2); p.x += (p.tx - p.x) * k; p.y += (p.ty - p.y) * k;
       if (p.moved && Math.hypot(p.tx - p.x, p.ty - p.y) < 4) { p.moved = false; reid(p); }
     });
-    $('hm-ppl').innerHTML = ppl.map(p => `<circle cx="${p.x}" cy="${p.y}" r="6" fill="${COL[p.i]}" stroke="#fff" stroke-width="1.5"/>
+    $('hm-ppl').innerHTML = ppl.map(p => `${p.i === ctl ? `<circle cx="${p.x}" cy="${p.y}" r="10" fill="none" stroke="${COL[p.i]}" stroke-width="1.5" stroke-dasharray="3 2"/>` : ''}<circle data-p="${p.i}" cx="${p.x}" cy="${p.y}" r="6" fill="${COL[p.i]}" stroke="#fff" stroke-width="1.5"/>
       <rect x="${p.x + 8}" y="${p.y - 9}" width="${p.ok ? 52 : 60}" height="13" rx="3" fill="${p.ok ? '#fff' : '#fff2f0'}" stroke="${p.ok ? '#d1d1d6' : '#d70015'}"/>
       <text x="${p.x + 12}" y="${p.y}" font-size="8" fill="#1d1d1f">${p.ok ? '' : '✕ '}${p.label} ${p.conf.toFixed(2)}</text>`).join('');
   });
@@ -1583,14 +1627,21 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
   const OCR = [[445, 428, 70], [838, 493, 70], [805, 808, 70], [575, 815, 70], [655, 462, 120], [590, 742, 90], [838, 378, 80]];
   const img = $('fl-img');
   OCR.forEach(([x, y, w]) => { const b = document.createElement('i'); b.className = 'fl-ocr'; Object.assign(b.style, { left: (x - w / 2) / 12 + '%', top: (y - 22) / 12 + '%', width: w / 12 + '%', height: 44 / 12 + '%' }); img.append(b); });
+  // 생성 후보마다 회전·글자 뭉개짐이 다름 → ③에서 보이고 ④에서 정합으로 지워짐
+  const CAND = [['rotate(1.5deg) scale(1.03)', '1.5°', '2 / 7'], ['rotate(-.8deg) scale(1.02)', '0.8°', '3 / 7'], ['rotate(2.1deg) scale(1.04)', '2.1°', '1 / 7']];
+  let cand = 0;
   const setStep = s => {
-    const [name, f, tf, rot, ocr, log] = STEP[s];
+    let [name, f, tf, rot, ocr, log] = STEP[s];
+    if (s == 3) [tf, rot, ocr] = CAND[cand], log = `[Qwen] 후보 ${cand + 1} · 회전 ${rot} · 한글 ${ocr} 판독`;
     img.style.filter = f; img.style.transform = tf; img.querySelectorAll('.fl-ocr').forEach(b => b.classList.toggle('on', s == 4));
     $('fl-cap').textContent = name; $('fl-r-step').textContent = name; $('fl-rot').textContent = rot; $('fl-ocr').textContent = ocr; logTo($('fl-log'), log, 4);
   };
   const cut = v => { $('fl-top').style.clipPath = `inset(0 0 0 ${v}%)`; $('fl-cut').style.left = v + '%'; $('fl-r-cut').textContent = v + '%'; };
   $('fl-range').oninput = e => cut(e.target.value);
   $('fl-steps').onclick = e => { const b = e.target.closest('button'); if (b) { segOn($('fl-steps'), b); setStep(b.dataset.s); } };
+  $('fl-cand').onclick = e => { const c = e.target.dataset?.c; if (c === undefined) return; cand = +c;
+    $('fl-cand').querySelectorAll('i').forEach(i => i.classList.toggle('on', i === e.target));
+    const b = $('fl-steps').querySelector('[data-s="3"]'); segOn($('fl-steps'), b); setStep(3); };
   cut(40); setStep(4);
 }
 
@@ -1605,7 +1656,16 @@ const segOn = (seg, btn) => seg.querySelectorAll('button').forEach(b => b.classL
   const gen = fn => { q++; $('gl-r-q').textContent = `${q} / 400`; $('gl-scan').classList.remove('on'); void cv.offsetWidth; $('gl-scan').classList.add('on');
     setTimeout(() => { fn(); q--; $('gl-r-q').textContent = `${q} / 400`; }, still ? 0 : 450); };
   $('gl-ratio').onclick = e => { const b = e.target.closest('[data-r]'); if (!b) return; segOn($('gl-ratio'), b);
-    gen(() => { const [a, c] = b.dataset.r.split('/'); ratio = a / c; fit(); $('gl-r-ratio').textContent = b.textContent; }); };
+    gen(() => { const [a, c] = b.dataset.r.split('/'); ratio = a / c; fit(); place(.5); $('gl-r-ratio').textContent = b.textContent; }); };
+  // 원본(점선)을 위아래로 끌어 놓으면 그 위치 기준으로 다시 아웃페인팅
+  const orig = cv.querySelector('.gl-orig');
+  let drag = false, pos = .5;
+  const place = f => { pos = f; const H = cv.clientHeight, oh = orig.offsetHeight, room = Math.max(0, H - oh);
+    orig.style.top = (oh / 2 + room * f) / H * 100 + '%'; $('gl-r-pos').textContent = f < .35 ? '위' : f > .65 ? '아래' : '가운데'; };
+  const toF = e => { const r = cv.getBoundingClientRect(); return Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)); };
+  cv.onpointerdown = e => { drag = true; cv.setPointerCapture(e.pointerId); place(toF(e)); };
+  cv.onpointermove = e => { if (drag) place(toF(e)); };
+  cv.onpointerup = cv.onpointercancel = () => { if (drag) { drag = false; gen(() => place(pos)); } };
   $('gl-style').onclick = e => { const b = e.target.closest('[data-st]'); if (!b) return; segOn($('gl-style'), b);
     gen(() => { $('gl-fx').style.filter = STY[b.dataset.st][1]; $('gl-r-style').textContent = STY[b.dataset.st][0]; }); };
   new ResizeObserver(fit).observe(wall);
